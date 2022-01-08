@@ -1,0 +1,333 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% load trading_tags %}
+
+{% block page-title %}
+
+{% endblock page-title%}
+
+{% block body-content %}
+	<div id="trading-page-background-container"></div>
+	<div id="trading-page-container" class="page-container">
+		{% include 'nav_bar.html' %}
+
+		<div id="trading-mid-section">
+			<div id="progression-chart-container">
+				<canvas id="progression-chart"></canvas>
+			</div>
+
+			<p id="no-trading-days-header">INVALID PERIOD</p>
+
+			<div id="tooltip-container">
+				<div class="tooltip-stat-container">
+					<p class="tooltip-header">Balance</p>
+					<p id="tooltip-balance" class="tooltip-value"></p>
+				</div>
+				<div class="tooltip-stat-container">
+					<p class="tooltip-header">Profits</p>
+					<p id="tooltip-profits" class="tooltip-value"></p>
+				</div>
+				<div class="tooltip-stat-container">
+					<p class="tooltip-header">Date</p>
+					<p id="tooltip-date" class="tooltip-value"></p>
+				</div>
+				<div class="tooltip-stat-container">
+					<p class="tooltip-header">Dev</p>
+					<p id="tooltip-dev" class="tooltip-value"></p>
+				</div>
+				<div class="tooltip-stat-container">
+					<p class="tooltip-header">Total Dev</p>
+					<p id="tooltip-total-dev" class="tooltip-value"></p>
+				</div>
+			</div>
+
+			<form id="trading-date-input-form">
+				<p class="trading-date-shortkey" id="first-trading-day">FIRST DAY</p>
+				<input type="date" name="date-from" id="date-from">
+				<input type="submit" name="date-range-submit" id="date-range-submit" value="">
+				<input type="date" name="date-to" id="date-to">
+				<p class="trading-date-shortkey" id="last-trading-day">LAST DAY</p>
+			</form>
+		</div>
+
+
+		<div id="trading-days-container">
+			{% for trading_day in current_page_trading_days %}
+				<div class="trading-day-container">
+					<div class="trading-day-date-container">
+						<p class="trading-day-date-day-month">{{ trading_day.trading_date.day }} {{ trading_day.trading_date|date:"F"|slice:"0:3" }}</p>
+						<h1 class="trading-day-date-year">{{ trading_day.trading_date.year }}</h1>
+					</div>
+					<div class="trading-day-balance-container stat-container">
+						<p>Balance</p>
+						<p>${{ trading_day.end_of_day_balance }}</p>
+					</div>
+
+					<div class="trading-day-progress-container stat-container">
+						<p>Dev</p>
+						<p class="trading-day-progress">{% calculate_day_dev trading_day %}%</p>
+					</div>
+
+					<div class="trading-day-total-profits-container stat-container">
+						<p>Total P/L</p>
+						<p class="total-profits">${% calculate_total_profits trading_day.trades.all %}</p>
+					</div>
+
+					<div class="trading-day-trades-count-container stat-container">
+						<p>Trades</p>
+						<p>{{ trading_day.trades.count }}</p>
+					</div>
+
+					<div class="trading-day-stats-container">
+						<div class="trades-container">
+							<div class="trade-headers-container">
+								<p>Quote</p>
+								<p>Entry</p>
+								<p>Exit</p>
+								<p>Qty</p>
+								<p>Commision</p>
+								<p>P/L</p>
+							</div>
+							{% for trade in trading_day.trades.all %}
+								<div class="trade-container">
+									<p>{{ trade.stock_quote }}</p>
+									<p>${{ trade.entry_price }}</p>
+									<p>${{ trade.exit_price }}</p>
+									<p>{{ trade.stock_amount }}</p>
+									<p>$-{{ trade.total_commision }}</p>
+									<p>${{ trade.profit_loss }}</p>
+								</div>
+							{% endfor %}
+
+							{% if trading_day.note != "" %}
+								<div class="trading-day-note-container">
+									<p class="trading-day-note-header">Note</p>
+									<p class="trading-day-note">{{ trading_day.note }}</p>
+								</div>
+							{% endif %}
+						</div>
+					</div>
+				</div>
+			{% endfor %}
+		</div>
+		<div id="trades-page-tracker-container">
+			<p id="page-tracker">{{ current_page_trading_days.number }} / {{ paginator.num_pages }}</p>
+
+			{% if current_page_trading_days.has_previous == True %}
+				<a href="?date-from={{ date_from }}&date-to={{ date_to }}&page={{ current_page_trading_days.previous_page_number }}" id="previous-page-button-container" class="active-link">
+				
+					<p id="previous-page-button-text"><</p>
+					
+				</a>
+
+				{% elif current_page_trading_days.has_previous == False %}
+					<div id="previous-page-button-container" class="disabled-link">
+						<p id="previous-page-button-text"><</p>
+					</div>
+			{% endif %}
+
+			{% if current_page_trading_days.has_next == True %}
+				<a href="?date-from={{ date_from }}&date-to={{ date_to }}&page={{ current_page_trading_days.next_page_number }}" id="next-page-button-container" class="active-link">
+				
+					<p id="next-page-button-text">></p>
+				</a>
+					{% elif current_page_trading_days.has_next == False %}
+						<div id="next-page-button-container" class="disabled-link">
+							<p id="next-page-button-text">></p>
+						</div>
+			{% endif %}
+		</div>
+	</div>
+
+	<script type="text/javascript">
+		const trading_day_containers = document.getElementsByClassName('trading-day-container')
+
+		for (let i = 0; i < trading_day_containers.length; i++) {
+			var move_direction = i % 2 === 0 ? '-10%' : '10%'
+
+			console.log(move_direction)
+			gsap.timeline({
+			  scrollTrigger: {
+			    trigger: trading_day_containers[i],
+			    start: "center bottom"
+			  }
+			})
+			.from(trading_day_containers[i], {x: move_direction, opacity: 0, duration: 1})
+		}
+
+	</script>
+
+	<!-- DOM SCRIPT -->
+	<script type="text/javascript">
+		document.addEventListener('DOMContentLoaded', function(){
+			addEventListeners();
+		});
+
+		function setDateFromToFirstTradingDay() {
+			const first_trading_date = new Date({{ first_trading_day.trading_date.year }}, {{ first_trading_day.trading_date.month }} - 1, {{ first_trading_day.trading_date.day }} + 1);
+
+			document.getElementById('date-from').valueAsDate = first_trading_date
+		}
+
+		function setDateToToLastTradingDay() {
+			const last_trading_date = new Date({{ last_trading_day.trading_date.year }}, {{ last_trading_day.trading_date.month }} - 1, {{ last_trading_day.trading_date.day }} + 1);
+
+			document.getElementById('date-to').valueAsDate = last_trading_date
+		}
+
+		const pastel_green = 'rgb(100, 255, 175)';
+		const sunrise_red = 'rgb(255, 50, 50)';
+
+		function getNumberFromString(theString) {
+			return theString.replace('$', '');
+		}
+
+		function addEventListeners(){
+			const trading_day_containers = document.getElementsByClassName('trading-day-container');
+			
+			for (let i = 0; i < trading_day_containers.length; i++) {
+				trading_day_containers[i].addEventListener('click', function(){
+					if (getComputedStyle(document.getElementsByClassName('trading-day-stats-container')[i]).display == 'none'){
+						document.getElementsByClassName('trading-day-stats-container')[i].style.display = 'grid';
+					}
+					else {
+						document.getElementsByClassName('trading-day-stats-container')[i].style.display = 'none';
+					}
+				});
+			}
+
+			const first_trading_day = document.getElementById('first-trading-day')
+			first_trading_day.addEventListener('click', function() {
+				setDateFromToFirstTradingDay();
+			});
+
+			const last_trading_day = document.getElementById('last-trading-day')
+			last_trading_day.addEventListener('click', function() {
+				setDateToToLastTradingDay();
+			});
+		}</script>
+
+	<!-- PROGRESSION CHART SCRIPT -->
+	<script type="text/javascript">
+		var canvas = document.getElementById('progression-chart').getContext('2d');
+
+		if ({{ filtered_trading_days.count }} > 0) {
+				document.getElementById('no-trading-days-header').style.display = 'none';
+				document.getElementById('progression-chart-container').style.display = 'block';
+
+			const chart = new Chart(canvas, {
+		    type: 'line',
+		    data: {
+		        labels: [
+		        {% for trading_day in filtered_trading_days %} 
+		        	"{{ trading_day.trading_date|date:'d-m-y' }}",
+		        {% endfor %}],
+
+		        datasets: [
+	        		{
+			            label: 'Balance',
+			            data: [
+			            {% for trading_day in filtered_trading_days %}
+			            	"{{ trading_day.end_of_day_balance }}",
+			            {% endfor %}
+			            ],
+			            pointBackgroundColor: pastel_green,
+			            pointRadius: 3,
+			            hitRadius: 100,
+			            pointHoverRadius: 6,
+			           	pointHoverBorderWidth: 0,
+			            tension: 0.3,
+			            borderWidth: 2,
+			            borderColor: pastel_green
+			        },
+		        ]
+		    },
+		    options: {
+		    	responsive: true,
+		    	maintainAspectRatio: false,
+		        plugins: {
+			        legend: {
+			            display: false,
+			        },
+					tooltip: {
+						backgroundColor: 'transparent',
+						displayColors: false,
+						titleColor: 'transparent',
+						enabled: true,
+		    			callbacks: {
+		    				label: function(item) {
+		    					document.getElementById('tooltip-balance').innerHTML = '$' + parseFloat(item.raw).toFixed(2)
+		    					document.getElementById('tooltip-date').innerHTML = item.label
+		    					document.getElementById('tooltip-total-dev').innerHTML = '%' + ((item.raw - {{ first_trading_day.end_of_day_balance }})/{{ first_trading_day.end_of_day_balance }} * 100).toFixed(2)
+		    					
+		    					if (item.dataIndex == 0) {
+		    						document.getElementById('tooltip-profits').innerHTML = '$' + (item.raw - {{ previous_trading_day.end_of_day_balance }}).toFixed(2)
+		    						document.getElementById('tooltip-dev').innerHTML = '%' + ((item.raw - {{ previous_trading_day.end_of_day_balance }})/{{ previous_trading_day.end_of_day_balance }} * 100).toFixed(2)
+		    					}else {
+									document.getElementById('tooltip-profits').innerHTML = '$' + (item.raw - item.dataset.data[item.dataIndex - 1]).toFixed(2)
+									document.getElementById('tooltip-dev').innerHTML = '%' + ((item.raw - item.dataset.data[item.dataIndex - 1])/item.dataset.data[item.dataIndex - 1] * 100).toFixed(2)
+		    					}
+		    				},
+		    			}
+		    		},
+		        },
+			    scales: {
+					x: {
+						grid: {
+							display: false,
+							drawBorder: false,
+						},
+						ticks: {
+							display: false,
+							callback: function(value) {
+								return value % Math.floor((this.max + 1) / 10) === 0 ? this.getLabelForValue(value) : ""
+							},
+						},
+					},
+					y: {
+						grid: {
+							display: false,
+							drawBorder: false,
+						},
+						ticks: {
+							display: false,
+							callback: function(value) {
+								return '$' + value
+							}
+						},
+						beginAtZero: false,
+						grace: '0%',
+					}
+			    },
+		    }
+		})}else {
+				document.getElementById('progression-chart-container').style.display = 'none';
+				document.getElementById('no-trading-days-header').style.display = 'block';
+		};</script>
+
+{% endblock body-content %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

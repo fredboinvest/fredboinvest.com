@@ -1,0 +1,35 @@
+{% load static %}
+
+<!-- MOBILE VERSION -->
+<div id="hamburger-container">
+	<div id="hamburger" class="hamburger-clickable">
+		<div id="hamburger-top-stick" class="hamburger-stick"></div>
+		<div id="hamburger-center-stick" class="hamburger-stick"></div>
+		<div id="hamburger-bottom-stick" class="hamburger-stick"></div>
+	</div>
+</div>
+
+<div id="hamburger-nav-bar">	
+	<a class="hamburger-item" href={% url 'artikler' %}>Artikler</a>
+	<a class="hamburger-item" href={% url 'trading' %}>Trading</a>
+	<a class="hamburger-item" href={% url 'index' %}>FredboInvest</a>
+	<a class="hamburger-item" href={% url 'who-am-i' %}>Who am I</a>
+	<a class="hamburger-item" href={% url 'kontakt' %}>Kontakt</a>
+</div>
+
+<!-- PC VERSION -->
+<div id="nav-bar-container">
+	<div id="nav-bar">
+		<div id="nav-bar-left">
+			<a class="nav-bar-left-item" href={% url 'artikler' %}>ARTIKLER</a>
+			<a class="nav-bar-left-item" href={% url 'trading' %}>TRADING</a>
+		</div>
+		<div id="nav-bar-center">
+			<a id="nav-bar-center-header" href={% url 'index' %}>FredboInvest</a>
+		</div>
+		<div id="nav-bar-right">
+			<a class="nav-bar-right-item" href={% url 'who-am-i' %}>WHO AM I</a>
+			<a class="nav-bar-right-item" href={% url 'kontakt' %}>KONTAKT</a>
+		</div>
+	</div>
+</div>

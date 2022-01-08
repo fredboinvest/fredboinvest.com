@@ -1,0 +1,87 @@
+{% load static %}
+
+<!DOCTYPE html>
+
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" type="text/css" href="{% static 'css/index.css' %}">
+	
+	{% block page-title %}
+		<title>A page</title>
+	{% endblock page-title %}
+</head>
+
+<body>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.8.0/gsap.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.8.0/
+	ScrollTrigger.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+	<script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	
+	{% block body-content %}
+		<p>This is a page with no content</p>
+	{% endblock body-content %}
+
+	<script type="text/javascript">
+
+		const hamburger = document.getElementById('hamburger');
+		const hamburger_nav_bar = document.getElementById('hamburger-nav-bar')
+		const hamburger_sticks = document.getElementsByClassName('hamburger-stick')
+
+		document.addEventListener('DOMContentLoaded', function(){
+			hamburger.addEventListener('click', function(){
+				if (hamburger.classList.contains('hamburger-clickable')) {
+					if (getComputedStyle(document.getElementById('hamburger-nav-bar')).display == 'none') {
+						open_hamburger()
+					}else {
+						close_hamburger()
+					}
+				}
+			});
+		});
+
+		function open_hamburger () {
+
+			gsap.timeline()
+			.add(function(){
+				hamburger.classList.remove('hamburger-clickable')
+				document.body.classList.add('disable-scrolling');
+				hamburger_nav_bar.style.display = 'grid';
+			})
+			.from(hamburger_nav_bar, {opacity: '0', duration: 0.5})
+			.to(hamburger, {rotation: '180'}, '-=0.5')
+			.to(hamburger_sticks[0], {opacity: 0}, '-=0.5')
+			.to(hamburger_sticks[2], {opacity: 0}, '-=0.5')
+			.add(function(){
+				hamburger.classList.add('hamburger-clickable')
+			});
+
+			console.log('PIk')
+		}	
+
+		function close_hamburger () {
+			gsap.timeline()
+			.add(function(){
+				hamburger.classList.remove('hamburger-clickable')
+			})
+			.to(hamburger, {rotation: '0', duration: 0.5})
+			.to(hamburger_nav_bar, {opacity: '0'}, '-=0.5')
+			.to(hamburger_sticks[0], {opacity: 1}, '-=0.5')
+			.to(hamburger_sticks[2], {opacity: 1}, '-=0.5')
+			.add(function(){
+				document.body.classList.remove('disable-scrolling');
+				hamburger_nav_bar.style.display = 'none';
+				hamburger_nav_bar.style.opacity = '1';	
+				hamburger.classList.add('hamburger-clickable')
+			});
+		}
+	</script>
+
+</body>
+
+</html>

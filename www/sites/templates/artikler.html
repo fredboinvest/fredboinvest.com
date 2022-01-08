@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% load article_tags %}
+
+{% block page-title %}
+
+{% endblock page-title %}
+
+{% block body-content %}
+	<div id="artikler-page-container" class="page-container">
+		{% include 'nav_bar.html' %}
+
+		<div id="articles-mid-section">
+			<form id="search-for-article-form">
+				<input type="text" name="article-search" id="article-search-input" autocomplete="off" placeholder="Search for article">
+				<button type="submit" name="" value="" id="search-for-article-button">
+					<img src={% static 'img/up-arrow.png'%} id="search-for-article-button-img">
+				</button>
+			</form>
+		</div>
+
+		<div id="articles-list-section">
+			{% if paginator.count == 0 %}
+				<p id="articles-found-header">Found no articles</p>
+			{% endif %}
+
+			{% if paginator.count > 0 %}
+				<p id="articles-found-header">{{ paginator.count }} articles available</p>
+			{% endif %}
+
+			{% for article in current_page %}
+				<div id="article-item-container">
+					<div id="article-item-date-container">
+						<p id="article-item-date-month-day">{{ article.article_date|date:"F"|slice:"0:3" }} {{ article.article_date.day }}</p>
+						<p id="article-item-date-year">{{ article.article_date.year }}</p>
+						<div id="article-item-date-timeline"></div>
+					</div>
+
+					<a href={% url 'artikel' article.article_slug %} id="article-item-header">{{ article.article_header }}</a>
+					<p id="article-item-tag">{{ article.tag }}</p>
+					<p id="article-item-resume">{{ article.article_resume }}</p>
+				</div>
+			{% endfor %}
+
+			<div id="articles-page-tracker-container">
+				<p id="page-tracker">{{ current_page.number }} / {{ paginator.num_pages }}</p>
+
+				{% if current_page.has_previous == True %}
+					<a href="?article-search={{ article_search }}&page={{ current_page.previous_page_number }}" id="previous-page-button-container" class="active-link">
+					
+						<p id="previous-page-button-text"><</p>
+						
+					</a>
+
+					{% elif current_page.has_previous == False %}
+						<div id="previous-page-button-container" class="disabled-link">
+							<p id="previous-page-button-text"><</p>
+						</div>
+				{% endif %}
+
+				{% if current_page.has_next == True %}
+					<a href="?article-search={{ article_search }}&page={{ current_page.next_page_number }}" id="next-page-button-container" class="active-link">
+					
+						<p id="next-page-button-text">></p>
+					</a>
+						{% elif current_page.has_next == False %}
+							<div id="next-page-button-container" class="disabled-link">
+								<p id="next-page-button-text">></p>
+							</div>
+				{% endif %}
+			</div>
+		</div>
+
+		<div id="categories-container">
+			<p id="categories-header">Categories</p>
+			{% for tag in tags %}
+				<div class="category-container">
+					<p class="category-header">{{ tag }}</p>
+					<div class="category-articles-container">
+						{% get_category_articles tag as category_articles %}
+
+						{% for article in category_articles %}
+							<a href={% url 'artikel' article.article_slug %} class="category-article">{{ article.article_header }}</a>
+						{% endfor %}
+					</div>
+				</div>
+			{% endfor %}
+		</div>
+	</div>
+
+	<script type="text/javascript">
+		document.addEventListener('DOMContentLoaded', function(){
+			const category_headers = document.querySelectorAll('.category-header');
+			const category_articles_containers = document.querySelectorAll('.category-articles-container');
+			var active_category_articles_container = null
+			var active_category_header = null
+
+			for (let i = 0; i < category_headers.length; i++) {
+				category_headers[i].addEventListener('click', function(){
+					if (getComputedStyle(category_articles_containers[i]).display == 'none') {
+						if (active_category_articles_container != null) {
+							active_category_articles_container.style.display = 'none'
+							active_category_header.classList.remove('active-header')
+						}
+
+						active_category_articles_container = category_articles_containers[i]
+						active_category_header = category_headers[i]
+
+						category_articles_containers[i].style.display = 'grid';
+						category_headers[i].classList.add("active-header")
+						const articles = category_articles_containers[i].getElementsByClassName('category-article')
+						var timeline = gsap.timeline()
+
+						for (let x = 0; x < articles.length; x++) {
+							timeline.from(category_articles_containers[i].getElementsByClassName('category-article')[x], {opacity: 0, duration: 0.05})
+						}
+					}else {
+						category_articles_containers[i].style.display = 'none';
+						category_headers[i].classList.remove('active-header')
+						active_category_articles_container = null
+						active_category_header = null
+					}
+				});
+			}
+		});
+	</script>
+{% endblock body-content %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

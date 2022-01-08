@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block page-title %}
+
+{% endblock page-title %}
+
+{% block body-content %}
+	<div id="home-page-background-container"></div>
+	<div id="home-page-container" class="page-container">
+		{% include 'nav_bar.html' %}
+		<div id="mid-section">
+			<div id="mid-section-grid">
+				<h1 id="mid-section-header">FREDBOINVEST</h1>
+				<p id="mid-section-note"></p>
+			</div>
+		</div>
+
+		<div id="recent-articles-container">
+			<p id="recent-articles-header">RECENT ARTICLES</p>
+
+			{% for article in articles %}
+				<div id="recent-article-container">
+					<div id="recent-article-date-container">
+						<div id="recent-article-date">
+							<p id="recent-article-month-year">{{ article.article_date|date:"F"|slice:"0:3" }} {{ article.article_date.year }}</p>
+							<h1 id="recent-article-day">{{ article.article_date.day }}</h1>
+						</div>
+						<div id="recent-article-timeline"></div>
+					</div>
+					<div id="recent-article-content-container">
+						<a href={% url 'artikel' article.article_slug %} id="recent-article-header">{{ article.article_header }}</a>
+						<p id="recent-article-resume">{{ article.article_resume }}</p>
+					</div>
+				</div>
+			{% endfor %}
+		</div>
+
+	</div>
+{% endblock body-content %}

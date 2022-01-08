@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% load article_tags %}
+
+{% block page-title %}
+
+{% endblock page-title %}
+
+{% block body-content %}
+	<div id="article-page-container" class="page-container">
+		{% include 'nav_bar.html' %}
+
+		<div id="article-mid-section-container">
+			<div id="article-mid-section">
+				<h1 id="article-mid-section-header">{{ article.article_header }}</h1>
+				<p id="article-mid-section-date">{{ article.article_date }}</p>
+			</div>
+		</div>
+
+		<div id="article-content-section">
+			<div id="article-content">
+				{{ article.article_content|safe }}
+			</div>
+		</div>
+
+		<div id="related-articles-container">
+			<p id="related-articles-header">RELATED ARTICLES</p>
+			{% get_related_articles article as related_articles %}
+			{% for related_article in related_articles %}
+				<div class="related-article-container">
+					<a href={% url 'artikel' related_article.article_slug %} class="related-article-header">{{ related_article.article_header }}</a>
+					<p class="related-article-date">{{ related_article.article_date }}</p>
+				</div>
+			{% endfor %}
+		</div>
+	</div>
+{% endblock body-content %}

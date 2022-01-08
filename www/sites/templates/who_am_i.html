@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block page-title %}
+
+{% endblock page-title %}
+
+{% block body-content %}
+
+	<div id="who-am-i-background-container"></div>
+	<div id="who-am-i-page-container" class="page-container">
+		{% include 'nav_bar.html' %}
+		<div id="who-am-i-mid-section">
+
+		</div>
+
+		<div id="bio-cards-container">
+			<div class="left-bio-card">
+				<p class="left-bio-card-header">01</p>
+
+				<div class="left-bio-card-content-container">
+					<p class="left-bio-card-content-header">Lorem ipsum dolor sit amet</p>
+					<p class="left-bio-card-content">Lorem ipsum dolor sit amet, consectetur adipiscing elit,Lorem ipsum dolor sit amet, consectetur adipiscing elit,Lorem ipsum dolor sit amet, consectetur adipiscing elit,Lorem ipsum dolor sit amet, consectetur adipiscing elit,Lorem ipsum dolor sit amet, consectetur adipiscing elit,Lorem ipsum dolor sit amet, consectetur adipiscing elit,Lorem ipsum dolor sit amet, consectetur adipiscing elit,</p>
+				</div>
+			</div>
+			<div class="right-bio-card">
+				<p class="right-bio-card-header">02</p>
+
+				<div class="right-bio-card-content-container">
+					<p class="right-bio-card-content-header">Lorem ipsum dolor sit amet</p>
+					<p class="right-bio-card-content">Lorem ipsum dolor sit amet, consectetur adipiscing elit,Lorem ipsum dolor sit amet, consectetur adipiscing elit,Lorem ipsum dolor sit amet, consectetur adipiscing elit,Lorem ipsum dolor sit amet, consectetur adipiscing elit,Lorem ipsum dolor sit amet, consectetur adipiscing elit,Lorem ipsum dolor sit amet, consectetur adipiscing elit,Lorem ipsum dolor sit amet, consectetur adipiscing elit,</p>
+				</div>
+			</div>
+
+			<div class="left-bio-card">
+				<p class="left-bio-card-header">03</p>
+
+				<div class="left-bio-card-content-container">
+					<p class="left-bio-card-content-header">Lorem ipsum dolor sit amet</p>
+					<p class="left-bio-card-content">Lorem ipsum dolor sit amet, consectetur adipiscing elit,Lorem ipsum dolor sit amet, consectetur adipiscing elit,Lorem ipsum dolor sit amet, consectetur adipiscing elit,Lorem ipsum dolor sit amet, consectetur adipiscing elit,Lorem ipsum dolor sit amet, consectetur adipiscing elit,Lorem ipsum dolor sit amet, consectetur adipiscing elit,Lorem ipsum dolor sit amet, consectetur adipiscing elit,</p>
+				</div>
+			</div>
+			<div class="right-bio-card">
+				<p class="right-bio-card-header">04</p>
+
+				<div class="right-bio-card-content-container">
+					<p class="right-bio-card-content-header">Lorem ipsum dolor sit amet</p>
+					<p class="right-bio-card-content">Lorem ipsum dolor sit amet, consectetur adipiscing elit,Lorem ipsum dolor sit amet, consectetur adipiscing elit,Lorem ipsum dolor sit amet, consectetur adipiscing elit,Lorem ipsum dolor sit amet, consectetur adipiscing elit,Lorem ipsum dolor sit amet, consectetur adipiscing elit,Lorem ipsum dolor sit amet, consectetur adipiscing elit,Lorem ipsum dolor sit amet, consectetur adipiscing elit,</p>
+				</div>
+			</div>
+
+			<div class="left-bio-card">
+				<p class="left-bio-card-header">05</p>
+
+				<div class="left-bio-card-content-container">
+					<p class="left-bio-card-content-header">Lorem ipsum dolor sit amet</p>
+					<p class="left-bio-card-content">Lorem ipsum dolor sit amet, consectetur adipiscing elit,Lorem ipsum dolor sit amet, consectetur adipiscing elit,Lorem ipsum dolor sit amet, consectetur adipiscing elit,Lorem ipsum dolor sit amet, consectetur adipiscing elit,Lorem ipsum dolor sit amet, consectetur adipiscing elit,Lorem ipsum dolor sit amet, consectetur adipiscing elit,Lorem ipsum dolor sit amet, consectetur adipiscing elit,</p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script type="text/javascript">
+		document.addEventListener('DOMContentLoaded', function(){
+			const left_bio_cards = document.getElementsByClassName('left-bio-card')
+			const right_bio_cards = document.getElementsByClassName('right-bio-card')
+
+			for (let i = 0; i < left_bio_cards.length; i++) {
+				gsap.timeline({
+				  scrollTrigger: {
+				    trigger: left_bio_cards[i],
+				    start: "center bottom"
+				  }
+				})
+				.from(left_bio_cards[i], {x: "-100%", duration: 1})
+				.from(left_bio_cards[i].querySelectorAll('.left-bio-card-header'), {opacity: 0, x: "-100%", duration: 1.5}, '-=0.5')
+				.from(left_bio_cards[i].querySelectorAll('.left-bio-card-content-header'), {opacity: 0, y: "-100%", duration: 1.5}, '-=1')
+				.from(left_bio_cards[i].querySelectorAll('.left-bio-card-content'), {opacity: 0, duration: 1.5}, '-=0.5')
+			}
+
+			for (let i = 0; i < right_bio_cards.length; i++) {
+				gsap.timeline({
+				  scrollTrigger: {
+				    trigger: right_bio_cards[i],
+				    start: "top bottom"
+				  }
+				})
+				.from(right_bio_cards[i], {x: "100%", duration: 1})
+				.from(right_bio_cards[i].querySelectorAll('.right-bio-card-header'), {opacity: 0, x: "100%", duration: 1.5}, '-=0.5')
+				.from(right_bio_cards[i].querySelectorAll('.right-bio-card-content-header'), {opacity: 0, y: "-100%", duration: 1.5}, '-=1')
+				.from(right_bio_cards[i].querySelectorAll('.right-bio-card-content'), {opacity: 0, duration: 1.5}, '-=0.5')
+			}
+		});
+
+	</script>
+
+{% endblock body-content %}
